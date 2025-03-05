@@ -14,6 +14,10 @@ public class PlayerCondition : MonoBehaviour
 
     public event Action onTakeDamage;
 
+    private void Update()
+    {
+        
+    }
 
     public void Heal(float value)
     {

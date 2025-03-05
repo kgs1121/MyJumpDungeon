@@ -41,7 +41,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (IsGrounded() && airTime > 2f) 
         {
-            GameManager.Instance.Player.condition.DropDamage(airTime);
+            GameManager.Instance.Player.condition.DropDamage(airTime * 10f);
             Debug.Log("«« ¥‚¿Ω");
             airTime = 0f;
         }

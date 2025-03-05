@@ -23,12 +23,12 @@ public class Condition : MonoBehaviour
 
     public void Add(float value)
     {
-        curValue += value;
+        curValue = curValue = Mathf.Min(curValue + value, maxValue);
     }
 
     public void Minus(float value)
     {
-        curValue -= Mathf.Max(curValue - value, 0);
+        curValue = Mathf.Max(curValue - value, 0);
     }
 
     float GetPercentage()
