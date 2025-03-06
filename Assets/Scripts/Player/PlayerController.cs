@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     public float jumpForce;
     private Vector2 movementInput;
     public LayerMask groundLayerMask;
+    public float useStamina;
 
     [Header("Look")]
     public Transform cameraContainer;
@@ -39,10 +40,15 @@ public class PlayerController : MonoBehaviour
             airTime += Time.deltaTime;
             Debug.Log(airTime);
         }
-        else if (IsGrounded() && airTime > 2f) 
+        else
         {
-            GameManager.Instance.Player.condition.DropDamage(airTime * 10f);
-            Debug.Log("피 닳음");
+            if (airTime > 4f)
+            {
+                GameManager.Instance.Player.condition.DropDamage(airTime);
+                Debug.Log("피 닳음");
+            }
+            
+            ClearConsole();
             airTime = 0f;
         }
     }
@@ -51,7 +57,7 @@ public class PlayerController : MonoBehaviour
     {
         Move();
 
-        if (isJumping && IsGrounded() && canJump)
+        if (isJumping && IsGrounded() && canJump && GameManager.Instance.Player.condition.UseStamina(useStamina))
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode.VelocityChange);
         }
@@ -115,10 +121,10 @@ public class PlayerController : MonoBehaviour
     {
         Ray[] rays = new Ray[4]
         {
-            new Ray(transform.position + (transform.forward * 0.2f) + (transform.up * 0.01f), Vector3.down),
-            new Ray(transform.position + (-transform.forward * 0.2f) + (transform.up * 0.01f), Vector3.down),
-            new Ray(transform.position + (transform.right * 0.2f) + (transform.up * 0.01f), Vector3.down),
-            new Ray(transform.position + (-transform.right * 0.2f) + (transform.up * 0.01f), Vector3.down)
+            new Ray(transform.position + (transform.forward * 0.2f) + (transform.up * 0.1f), Vector3.down),
+            new Ray(transform.position + (-transform.forward * 0.2f) + (transform.up * 0.1f), Vector3.down),
+            new Ray(transform.position + (transform.right * 0.2f) + (transform.up * 0.1f), Vector3.down),
+            new Ray(transform.position + (-transform.right * 0.2f) + (transform.up * 0.1f), Vector3.down)
         };
 
         for (int i = 0; i < rays.Length; i++)
@@ -136,5 +142,14 @@ public class PlayerController : MonoBehaviour
     {
         yield return new WaitForSeconds(jumpCooldown); // 쿨타임 기다림
         canJump = true; // 쿨타임 끝나면 점프 가능
+    }
+
+    void ClearConsole()
+    {
+#if UNITY_EDITOR
+        var logEntries = System.Type.GetType("UnityEditor.LogEntries,UnityEditor");
+        var clearMethod = logEntries.GetMethod("Clear", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
+        clearMethod.Invoke(null, null);
+#endif
     }
 }
