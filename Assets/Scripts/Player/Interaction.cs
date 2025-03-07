@@ -62,11 +62,14 @@ public class Interaction : MonoBehaviour
     {
         if (context.phase == InputActionPhase.Started && curInteractable != null)
         {
-            curInteractable.OnInteracted();
-            curInteractGameObject = null;
-            curInteractable = null;
-            promptText.gameObject.SetActive(false);
-            GameManager.Instance.ItemUIManager.ShowItem();
+
+            if (curInteractable.OnInteracted())
+            {
+                curInteractGameObject = null;
+                curInteractable = null;
+                promptText.gameObject.SetActive(false);
+                GameManager.Instance.ItemUIManager.ShowItem();
+            }
         }
     }
 

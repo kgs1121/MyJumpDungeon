@@ -11,6 +11,11 @@ public class Condition : MonoBehaviour
     public float lossGain;
     public Image uiBar;
 
+    private void Awake()
+    {
+        GameManager.Instance.Condition = this;
+    }
+
     void Start()
     {
         curValue = startValue;

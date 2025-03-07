@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
     private float jumpCooldown = 0.01f;
 
     public float airTime = 0f; // 공중에 머무른 시간
+    public float dropDam = 1.5f;
 
     private void Awake()
     {
@@ -38,21 +39,19 @@ public class PlayerController : MonoBehaviour
         if (!IsGrounded())
         {
             airTime += Time.deltaTime;
-            Debug.Log(airTime);
         }
         else
         {
             if (airTime > 4f)
             {
-                GameManager.Instance.Player.condition.DropDamage(airTime);
-                Debug.Log("피 닳음");
+                GameManager.Instance.Player.condition.DropDamage(airTime * dropDam);
             }
             
-            ClearConsole();
             airTime = 0f;
         }
     }
 
+    
     void FixedUpdate()
     {
         Move();
@@ -62,6 +61,9 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(Vector2.up * jumpForce, ForceMode.VelocityChange);
         }
     }
+    
+
+    
 
     private void LateUpdate()
     {
@@ -85,6 +87,7 @@ public class PlayerController : MonoBehaviour
         mouseDelta = context.ReadValue<Vector2>();
     }
 
+    
     public void OnJump(InputAction.CallbackContext context)
     {
         
@@ -99,6 +102,7 @@ public class PlayerController : MonoBehaviour
             isJumping = false;
         }
     }
+
 
     void Move()
     {

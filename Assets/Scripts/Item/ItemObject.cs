@@ -5,7 +5,7 @@ using UnityEngine;
 public interface IInteractable
 {
     public string GetInteractPrompt();
-    public void OnInteracted();
+    public bool OnInteracted();
 }
 
 public class ItemObject : MonoBehaviour, IInteractable
@@ -18,11 +18,16 @@ public class ItemObject : MonoBehaviour, IInteractable
         return str;
     }
 
-    public void OnInteracted()
+    public bool OnInteracted()
     {
         GameManager.Instance.Player.itemData = data;
-        GameManager.Instance.Player.addItem?.Invoke();
-        Destroy(gameObject);
+        //GameManager.Instance.Player.addItem?.Invoke();
+        if (data.type == ItemType.Consumable)
+        {
+            Destroy(gameObject);
+            return true;
+        }
+        else return false;
     }
 }
 
