@@ -26,6 +26,11 @@ public class PlayerController : MonoBehaviour
     private bool canJump = true;
     private float jumpCooldown = 0.01f;
 
+    private bool onecheck; // 떨어질때 한번 체크
+    private bool isDrop;  // 떨어지고 있는지 확인
+    public float dropy;  // 떨어질대 y좌표
+    public float groundy; // 
+
     public float airTime = 0f; // 공중에 머무른 시간
     public float dropDam = 1.5f;
 
@@ -36,19 +41,15 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (!IsGrounded())
+        CheckDropPlayer();
+        if (IsGrounded() && dropy - groundy > 10f)
         {
-            airTime += Time.deltaTime;
+            GameManager.Instance.Player.condition.DropDamage((dropy - groundy) * dropDam);
+            isDrop = false;
+            dropy = groundy;
         }
-        else
-        {
-            if (airTime > 4f)
-            {
-                GameManager.Instance.Player.condition.DropDamage(airTime * dropDam);
-            }
             
-            airTime = 0f;
-        }
+        //airTime = 0f;
     }
 
     
@@ -81,6 +82,22 @@ public class PlayerController : MonoBehaviour
             movementInput = Vector2.zero;
         }
     }
+
+    public void CheckDropPlayer()
+    {
+        if (!isDrop && !IsGrounded() && rb.velocity.y < 0)
+        {
+            isDrop = true;
+            onecheck = true;
+        }
+        if (isDrop && onecheck)
+        {
+            dropy = transform.position.y;
+            onecheck = false;
+        }
+        if (rb.velocity.y > 0) onecheck = true;
+    }
+
 
     public void OnLook(InputAction.CallbackContext context)
     {
@@ -135,10 +152,11 @@ public class PlayerController : MonoBehaviour
         {
             if (Physics.Raycast(rays[i], 0.1f, groundLayerMask))
             {
+                groundy = transform.position.y;
                 return true;
             }
         }
-
+        
         return false;
     }
 
@@ -148,12 +166,4 @@ public class PlayerController : MonoBehaviour
         canJump = true; // 쿨타임 끝나면 점프 가능
     }
 
-    void ClearConsole()
-    {
-#if UNITY_EDITOR
-        var logEntries = System.Type.GetType("UnityEditor.LogEntries,UnityEditor");
-        var clearMethod = logEntries.GetMethod("Clear", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
-        clearMethod.Invoke(null, null);
-#endif
-    }
 }
