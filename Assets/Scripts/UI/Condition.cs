@@ -28,7 +28,12 @@ public class Condition : MonoBehaviour
 
     public void Add(float value)
     {
-        curValue = curValue = Mathf.Min(curValue + value, maxValue);
+        curValue = Mathf.Min(curValue + value, maxValue);
+    }
+
+    public void SpeedAdd(float value)
+    {
+        curValue = maxValue;
     }
 
     public void Minus(float value)

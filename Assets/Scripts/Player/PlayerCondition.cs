@@ -20,8 +20,8 @@ public class PlayerCondition : MonoBehaviour
     {
         stamina.Add(stamina.lossGain * Time.deltaTime);
         
-        speed.Minus(speed.lossGain * Time.deltaTime);
-        GameManager.Instance.Player.controller.moveSpeed = speed.curValue + speed.startValue;
+        //speed.Minus(speed.lossGain * Time.deltaTime);
+        //GameManager.Instance.Player.controller.moveSpeed = speed.curValue + speed.startValue;
 
         if (health.curValue == 0)
         {
@@ -42,9 +42,8 @@ public class PlayerCondition : MonoBehaviour
 
     public bool SpeedUp(float value)
     {
-        if(speed.curValue + value > speed.maxValue) return false;
-
-        speed.Add(value);
+        speed.SpeedAdd(value);
+        GameManager.Instance.Player.controller.moveSpeed = speed.curValue;
         onTakeSpeed?.Invoke();
         return true;
     }
@@ -61,4 +60,11 @@ public class PlayerCondition : MonoBehaviour
         stamina.Minus(value);
         return true;
     }
+
+    public float OriginSpeed()
+    {
+        return speed.startValue;
+    }
+
+    
 }

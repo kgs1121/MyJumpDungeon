@@ -6,15 +6,14 @@ using UnityEngine.UI;
 public class SpeedIndicator : MonoBehaviour
 {
     public Image image;
-    public float flashSpeed;
+    private float flashSpeed;
 
     private Coroutine coroutine;
 
     private void Start()
     {
         GameManager.Instance.Player.condition.onTakeSpeed += Flash;
-        flashSpeed = GameManager.Instance.Condition.lossGain * Buff.plusSpeed;
-        
+        flashSpeed = GameManager.Instance.Player.controller.returnSpeed;
     }
 
     void Flash()
@@ -22,7 +21,7 @@ public class SpeedIndicator : MonoBehaviour
         if (coroutine != null) StopCoroutine(coroutine);
 
         image.enabled = true;
-        image.color = new Color(100f / 255f, 100f / 255f, 1f);
+        image.color = new Color(100f / 255f, 100f / 255f, 1f, 0.28f);
         coroutine = StartCoroutine(FadeAway());
     }
 
@@ -30,6 +29,8 @@ public class SpeedIndicator : MonoBehaviour
     {
         float startAlpha = 0.3f;
         float a = startAlpha;
+
+        yield return new WaitForSeconds(GameManager.Instance.Player.controller.duration);
 
         while (a > 0)
         {

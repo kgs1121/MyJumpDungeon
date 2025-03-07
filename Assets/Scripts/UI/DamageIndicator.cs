@@ -26,7 +26,7 @@ public class DamageIndicator : MonoBehaviour
 
     IEnumerator FadeAway()
     {
-        float startAlpha = 0.3f;
+        float startAlpha = 0.2f;
         float a = startAlpha;
 
         while(a > 0)

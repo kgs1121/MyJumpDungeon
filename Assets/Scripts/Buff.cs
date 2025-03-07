@@ -1,17 +1,23 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Buff : MonoBehaviour
 {
-    public static float plusSpeed = 3;
-
+    private Coroutine coroutine;
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            GameManager.Instance.Player.condition.SpeedUp(plusSpeed);
+            if(coroutine != null) StopCoroutine(coroutine);
+
+            coroutine = StartCoroutine(GameManager.Instance.Player.controller.SpeedBoost());
             //Destroy(gameObject);
         }
     }
+
+
+    
+
 }

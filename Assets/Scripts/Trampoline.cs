@@ -16,7 +16,7 @@ public class Trampoline : MonoBehaviour
             {
                 Debug.Log("Contact normal: " + contact.normal);
                 // 접촉점의 법선 벡터가 아래쪽인 경우에만 힘을 추가
-                if (contact.normal.y < 0f)  // 법선 벡터의 Y값이 음수이면
+                if (contact.normal.y < -0.5f)  // 법선 벡터의 Y값이 음수이면
                 {
                     if (collision.collider != null)
                     {

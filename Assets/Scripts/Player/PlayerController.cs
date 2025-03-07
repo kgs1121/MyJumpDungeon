@@ -21,6 +21,12 @@ public class PlayerController : MonoBehaviour
     private Vector2 mouseDelta;
     public bool canLook = true;
 
+    [Header("ItemPassive")]
+    public float speedBoost = 2f;   // 속도 배율
+    public float duration = 5f;     // 효과 지속 시간
+    public float returnSpeed = 2f;  // 점차 원래 속도로 돌아가는 속도
+
+
     private Rigidbody rb;
     private bool isJumping;
     private bool canJump = true;
@@ -33,6 +39,8 @@ public class PlayerController : MonoBehaviour
 
     public float airTime = 0f; // 공중에 머무른 시간
     public float dropDam = 1.5f;
+
+    
 
     private void Awake()
     {
@@ -166,4 +174,23 @@ public class PlayerController : MonoBehaviour
         canJump = true; // 쿨타임 끝나면 점프 가능
     }
 
+
+    public IEnumerator SpeedBoost()
+    {
+        float originspeed = GameManager.Instance.Player.condition.OriginSpeed();
+        GameManager.Instance.Player.condition.SpeedUp(speedBoost);
+        yield return new WaitForSeconds(5f);
+
+        float currentspeed = moveSpeed;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < returnSpeed)
+        {
+            elapsedTime += Time.deltaTime;
+            moveSpeed = Mathf.Lerp(currentspeed, originspeed, elapsedTime / returnSpeed);
+            yield return null;
+        }
+
+        moveSpeed = originspeed;
+    }
 }
