@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     [Header("Moverment")]
     public float moveSpeed;
     public float jumpForce;
-    private Vector2 movementInput;
+    public Vector2 movementInput;
     public LayerMask groundLayerMask;
     public float useStamina;
 
@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     public bool canLook = true;
 
     [Header("ItemPassive")]
-    public float speedBoost = 2f;   // 속도 배율
+    public float speedBoost = 2f;   // 속도 증가량
     public float speedDuration = 5f;     // 스피드 효과 지속 시간
     public float returnSpeed = 2f;  // 점차 원래 속도로 돌아가는 속도
 
@@ -88,18 +88,6 @@ public class PlayerController : MonoBehaviour
         if (canLook) CameraLook();
     }
 
-    public void OnMove(InputAction.CallbackContext context)
-    {
-        if (context.phase == InputActionPhase.Performed)
-        {
-            movementInput = context.ReadValue<Vector2>();
-        }
-        else if (context.phase == InputActionPhase.Canceled)
-        {
-            movementInput = Vector2.zero;
-        }
-    }
-
     public void CheckDropPlayer()
     {
         if (!isDrop && !IsGrounded() && rb.velocity.y < 0)
@@ -115,6 +103,17 @@ public class PlayerController : MonoBehaviour
         if (rb.velocity.y > 0) onecheck = true;
     }
 
+    public void OnMove(InputAction.CallbackContext context)
+    {
+        if (context.phase == InputActionPhase.Performed)
+        {
+            movementInput = context.ReadValue<Vector2>();
+        }
+        else if (context.phase == InputActionPhase.Canceled)
+        {
+            movementInput = Vector2.zero;
+        }
+    }
 
     public void OnLook(InputAction.CallbackContext context)
     {
@@ -125,7 +124,7 @@ public class PlayerController : MonoBehaviour
     public void OnJump(InputAction.CallbackContext context)
     {
         
-        if (canJump && context.phase == InputActionPhase.Started)
+        if (context.phase == InputActionPhase.Started)
         {
             isJumping = true;
         }
@@ -134,7 +133,6 @@ public class PlayerController : MonoBehaviour
             isJumping = false;
         }
     }
-
 
     void Move()
     {
@@ -165,7 +163,6 @@ public class PlayerController : MonoBehaviour
 
         for (int i = 0; i < rays.Length; i++)
         {
-            Debug.DrawRay(rays[i].origin, rays[i].direction * 0.1f, Color.red);
             if (Physics.Raycast(rays[i], 0.2f, groundLayerMask))
             {
                 groundy = transform.position.y;
@@ -175,13 +172,6 @@ public class PlayerController : MonoBehaviour
         }
 
         return false;
-    }
-
-
-    IEnumerator CanJump()
-    {
-        yield return new WaitForSeconds(jumpCooldown);
-        canJump = true;
     }
 
     public IEnumerator SpeedBoost()
@@ -203,7 +193,6 @@ public class PlayerController : MonoBehaviour
         moveSpeed = originspeed;
     }
 
-    
 
     private void OnCollisionEnter(Collision collision)
     {

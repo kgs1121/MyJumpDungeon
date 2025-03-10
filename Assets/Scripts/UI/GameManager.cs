@@ -31,13 +31,6 @@ public class GameManager : MonoBehaviour
         set { itemUIManager = value; }
     }
 
-    private Condition condition;
-    public Condition Condition
-    {
-        get { return condition; }
-        set { condition = value; }
-    }
-
     private void Awake()
     {
         if(instance == null)

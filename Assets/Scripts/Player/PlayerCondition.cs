@@ -21,9 +21,6 @@ public class PlayerCondition : MonoBehaviour
     {
         stamina.Add(stamina.lossGain * Time.deltaTime);
         
-        //speed.Minus(speed.lossGain * Time.deltaTime);
-        //GameManager.Instance.Player.controller.moveSpeed = speed.curValue + speed.startValue;
-
         if (health.curValue == 0)
         {
             Die();
