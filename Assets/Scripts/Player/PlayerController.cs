@@ -39,12 +39,18 @@ public class PlayerController : MonoBehaviour
 
     public float airTime = 0f; // 공중에 머무른 시간
     public float dropDam = 1.5f;
+    public Vector3 spwanPlayer;
 
-    
+    private Coroutine coroutine;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+    }
+
+    private void Start()
+    {
+        spwanPlayer = transform.position;
     }
 
     private void Update()
@@ -56,8 +62,6 @@ public class PlayerController : MonoBehaviour
             isDrop = false;
             dropy = groundy;
         }
-            
-        //airTime = 0f;
     }
 
     
@@ -192,5 +196,15 @@ public class PlayerController : MonoBehaviour
         }
 
         moveSpeed = originspeed;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.CompareTag("Buff"))
+        {
+            if (coroutine != null) StopCoroutine(coroutine);
+
+            coroutine = StartCoroutine(SpeedBoost());
+        }
     }
 }

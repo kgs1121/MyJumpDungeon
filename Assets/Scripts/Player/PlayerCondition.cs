@@ -15,6 +15,7 @@ public class PlayerCondition : MonoBehaviour
 
     public event Action onTakeDamage;
     public event Action onTakeSpeed;
+    public event Action onDie;
 
     private void Update()
     {
@@ -50,7 +51,9 @@ public class PlayerCondition : MonoBehaviour
 
     public void Die()
     {
-
+        onDie?.Invoke();
+        health.curValue = health.maxValue;
+        GameManager.Instance.Player.transform.position = GameManager.Instance.Player.controller.spwanPlayer;
     }
 
     public bool UseStamina(float value)

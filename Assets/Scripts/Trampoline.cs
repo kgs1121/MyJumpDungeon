@@ -14,12 +14,13 @@ public class Trampoline : MonoBehaviour
             // 충돌 지점의 접촉점을 확인
             foreach (ContactPoint contact in collision.contacts)
             {
-                Debug.Log("Contact normal: " + contact.normal);
+                // Debug.Log("Contact normal: " + contact.normal);
                 // 접촉점의 법선 벡터가 아래쪽인 경우에만 힘을 추가
                 if (contact.normal.y < -0.5f)  // 법선 벡터의 Y값이 음수이면
                 {
                     if (collision.collider != null)
                     {
+                        collision.rigidbody.velocity = new Vector2(collision.rigidbody.velocity.x, 0); // 낙하 속도를 초기화
                         // 위 방향으로 힘 추가
                         collision.rigidbody.AddForce(Vector2.up * jumpForce, ForceMode.VelocityChange);
                     }

@@ -29,5 +29,13 @@ public class ItemObject : MonoBehaviour, IInteractable
         }
         else return false;
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.CompareTag("Player"))
+        {
+            Destroy(gameObject);
+        }
+    }
 }
 
