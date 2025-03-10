@@ -30,7 +30,7 @@ public class SpeedIndicator : MonoBehaviour
         float startAlpha = 0.3f;
         float a = startAlpha;
 
-        yield return new WaitForSeconds(GameManager.Instance.Player.controller.duration);
+        yield return new WaitForSeconds(GameManager.Instance.Player.controller.speedDuration);
 
         while (a > 0)
         {

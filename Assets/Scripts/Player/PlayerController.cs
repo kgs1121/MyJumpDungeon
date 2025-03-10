@@ -23,14 +23,14 @@ public class PlayerController : MonoBehaviour
 
     [Header("ItemPassive")]
     public float speedBoost = 2f;   // 속도 배율
-    public float duration = 5f;     // 효과 지속 시간
+    public float speedDuration = 5f;     // 스피드 효과 지속 시간
     public float returnSpeed = 2f;  // 점차 원래 속도로 돌아가는 속도
 
 
     private Rigidbody rb;
-    private bool isJumping;
+    public bool isJumping;
     private bool canJump = true;
-    private float jumpCooldown = 0.01f;
+    private float jumpCooldown = 0.1f;
 
     private bool onecheck; // 떨어질때 한번 체크
     private bool isDrop;  // 떨어지고 있는지 확인
@@ -43,6 +43,8 @@ public class PlayerController : MonoBehaviour
 
     private Coroutine coroutine;
 
+    private int groundCheckNum = 0;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -51,6 +53,7 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         spwanPlayer = transform.position;
+        moveSpeed = GameManager.Instance.Player.condition.OriginSpeed();
     }
 
     private void Update()
@@ -68,10 +71,12 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         Move();
+        
 
-        if (isJumping && IsGrounded() && canJump && GameManager.Instance.Player.condition.UseStamina(useStamina))
+        if (isJumping && IsGrounded() && GameManager.Instance.Player.condition.UseStamina(useStamina))
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode.VelocityChange);
+            groundCheckNum++;
         }
     }
     
@@ -120,14 +125,12 @@ public class PlayerController : MonoBehaviour
     public void OnJump(InputAction.CallbackContext context)
     {
         
-        if (context.phase == InputActionPhase.Started)
+        if (canJump && context.phase == InputActionPhase.Started)
         {
-            StartCoroutine(JumpCooldownRoutine());
             isJumping = true;
         }
         else if (context.phase == InputActionPhase.Canceled)
         {
-            canJump = false;
             isJumping = false;
         }
     }
@@ -162,28 +165,30 @@ public class PlayerController : MonoBehaviour
 
         for (int i = 0; i < rays.Length; i++)
         {
-            if (Physics.Raycast(rays[i], 0.1f, groundLayerMask))
+            Debug.DrawRay(rays[i].origin, rays[i].direction * 0.1f, Color.red);
+            if (Physics.Raycast(rays[i], 0.2f, groundLayerMask))
             {
                 groundy = transform.position.y;
-                return true;
+                
+                if(groundCheckNum == 0) return true;
             }
         }
-        
+
         return false;
     }
 
-    IEnumerator JumpCooldownRoutine()
-    {
-        yield return new WaitForSeconds(jumpCooldown); // 쿨타임 기다림
-        canJump = true; // 쿨타임 끝나면 점프 가능
-    }
 
+    IEnumerator CanJump()
+    {
+        yield return new WaitForSeconds(jumpCooldown);
+        canJump = true;
+    }
 
     public IEnumerator SpeedBoost()
     {
         float originspeed = GameManager.Instance.Player.condition.OriginSpeed();
         GameManager.Instance.Player.condition.SpeedUp(speedBoost);
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(speedDuration);
 
         float currentspeed = moveSpeed;
         float elapsedTime = 0f;
@@ -198,13 +203,16 @@ public class PlayerController : MonoBehaviour
         moveSpeed = originspeed;
     }
 
+    
+
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.collider.CompareTag("Buff"))
         {
             if (coroutine != null) StopCoroutine(coroutine);
-
             coroutine = StartCoroutine(SpeedBoost());
         }
+
+        if (((1 << collision.gameObject.layer) & groundLayerMask) != 0) groundCheckNum = 0;
     }
 }

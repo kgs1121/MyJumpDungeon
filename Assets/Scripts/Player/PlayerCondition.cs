@@ -58,7 +58,11 @@ public class PlayerCondition : MonoBehaviour
 
     public bool UseStamina(float value)
     {
-        if (stamina.curValue - value < 0f) return false;
+        if (stamina.curValue - value < 0f)
+        {
+            GameManager.Instance.Player.controller.isJumping = false;
+            return false;
+        }
 
         stamina.Minus(value);
         return true;
