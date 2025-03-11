@@ -157,21 +157,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    
-    void LookDirection()
-    {
-        // 카메라의 forward 벡터를 저장 (상하좌우 방향만 저장)
-        Vector3 cameraForward = cameraContainer.forward;
-        // 카메라의 상/하, 좌/우 방향을 추출
-        float directionX = cameraForward.x; // 좌우 방향 (플러스면 오른쪽, 마이너스면 왼쪽)
-        float directionZ = cameraForward.z; // 상하 방향 (플러스면 앞쪽, 마이너스면 뒤쪽)
-        // 상하좌우만 저장
-        float savedXRotation = cameraContainer.eulerAngles.x; // 상하 (pitch)
-        float savedYRotation = cameraContainer.eulerAngles.y; // 좌우 (yaw)
-        // 저장된 상하좌우 회전 값으로 회전 복원
-        cameraContainer.eulerAngles = new Vector3(savedXRotation, savedYRotation, 0);
-    }
-
 
     void Move()
     {
