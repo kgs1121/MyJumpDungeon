@@ -23,13 +23,13 @@
 
 
 ## 코드 구성
-- PlayerController.cs 에서 플레이어 점프, 이동, 낙하 데미지, 보는 방향, 스피드 버프 적용 구현
+- PlayerController.cs 에서 플레이어 점프, 이동, 낙하 데미지, 보는 방향, 스피드 버프 적용 구현, 벽 타기 관련 로직 구현
 - TramPoline.cs 에서 점프대 로직 구현
 - MovePlatform.cs 에서 움직이는 플랫폼 로직 구현
 - Condition, UICondition, PlayerCondition.cs 에서 플레이어의 체력, 스테미나, 스피드 관리
+- Ladder.cs 에서 벽 타기 관련 로직 구현
 
-
-##트러블 슈팅
+## 트러블 슈팅
 - 낙하데미지를 체공시간에 비례하여 주려 했으나 벽에 오를때 체공시간이 계속 흘러가서 플레이어의 y좌표와 땅의 y좌표 값의 차이에 비례해 데미지를 주기로 하였습니다.
 
 - 점프대 구현 과정에서 플레이어가 점프대 옆면에 부딪혀도 튀어오르는 문제가 발생하였습니다. 이를 해결하기 위해 검색 해본 결과 ContactPoint에서 충돌체끼리의 법선 벡터를 통해 부딪히는 방향을 구할수 있다는 것을 알게 되어 다음과 같이 해결하였습니다. ![image](https://github.com/user-attachments/assets/8fd281bc-a26a-4bbf-8158-948583bdc18f)
