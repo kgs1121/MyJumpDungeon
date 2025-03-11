@@ -88,7 +88,6 @@ public class PlayerController : MonoBehaviour
             if (!isJumping)
             {
                 moveDirection = new Vector3(0, lookCheck * movementInput.y * moveSpeed, lookCheck * movementInput.x * moveSpeed); // y축 방향만 이동
-                Debug.Log(transform.forward.x);
                 rb.velocity = moveDirection;
             }
         }
