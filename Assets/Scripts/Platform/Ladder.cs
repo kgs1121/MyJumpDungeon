@@ -4,12 +4,23 @@ using UnityEngine;
 
 public class Ladder : MonoBehaviour
 {
-    private void OnCollisionStay(Collision collision)
+    private void OnCollisionEnter(Collision collision)
     {
         if (collision.collider.CompareTag("Player"))
         {
-            //GameManager.Instance.Player.controller.
+            GameManager.Instance.Player.controller.SetLadder(true);
+            GameManager.Instance.Player.controller.rb.velocity = Vector3.zero;
         }
     }
+
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.collider.CompareTag("Player"))
+        {
+            GameManager.Instance.Player.controller.SetLadder(false);
+        }
+    }
+
 
 }

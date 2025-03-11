@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
+
     public static GameManager Instance
     {
         get
@@ -31,6 +32,13 @@ public class GameManager : MonoBehaviour
         set { itemUIManager = value; }
     }
 
+    private MovePlatform moveplatform;
+    public MovePlatform MovePlatform
+    {
+        get { return moveplatform; }
+        set { moveplatform = value; }
+    }
+
     private void Awake()
     {
         if(instance == null)
@@ -43,5 +51,4 @@ public class GameManager : MonoBehaviour
             if(instance != this) Destroy(gameObject);
         }
     }
-
 }

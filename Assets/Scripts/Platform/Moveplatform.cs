@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Moveplatform : MonoBehaviour
+public class MovePlatform : MonoBehaviour
 {
     public Vector3 startPosition;
 
@@ -17,6 +17,13 @@ public class Moveplatform : MonoBehaviour
 
     private float[] axes; // 0이면 x축으로 이동, 1이면 y축으로 이동, 2이면 z축으로 이동
 
+    public Collider movePlatformCollider;
+
+    private void Awake()
+    {
+        GameManager.Instance.MovePlatform = this;
+        movePlatformCollider = GetComponent<Collider>();
+    }
     private void Start()
     {
         startPosition = transform.position;
@@ -36,7 +43,9 @@ public class Moveplatform : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
+        {
             other.transform.SetParent(transform);
+        }
     }
 
     private void OnTriggerExit(Collider other)

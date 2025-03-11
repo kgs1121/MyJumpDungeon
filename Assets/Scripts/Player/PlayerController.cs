@@ -27,23 +27,27 @@ public class PlayerController : MonoBehaviour
     public float returnSpeed = 2f;  // 점차 원래 속도로 돌아가는 속도
 
 
-    private Rigidbody rb;
+    public Rigidbody rb;
     public bool isJumping;
-    private bool canJump = true;
-    private float jumpCooldown = 0.1f;
 
     private bool onecheck; // 떨어질때 한번 체크
     private bool isDrop;  // 떨어지고 있는지 확인
-    public float dropy;  // 떨어질대 y좌표
-    public float groundy; // 
+    public float dropy;  // 떨어질때 y좌표
+    public float groundy; // 바닥 y 좌표
+    public float isDropDamage;
 
-    public float airTime = 0f; // 공중에 머무른 시간
     public float dropDam = 1.5f;
     public Vector3 spwanPlayer;
 
     private Coroutine coroutine;
 
     private int groundCheckNum = 0;
+
+    public bool isOnLadder;
+
+    public MovePlatform[] movePlatforms;
+
+    public LayerMask OnLadder; // 무시할 레이어
 
     private void Awake()
     {
@@ -59,23 +63,34 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         CheckDropPlayer();
-        if (IsGrounded() && dropy - groundy > 10f)
+        if (IsGrounded() && dropy - groundy > isDropDamage)
         {
             GameManager.Instance.Player.condition.DropDamage((dropy - groundy) * dropDam);
             isDrop = false;
             dropy = groundy;
         }
+
+        if (isOnLadder)
+        {
+            Vector3 moveDirection = new Vector3();
+            rb.useGravity = false;  // 중력 비활성화
+            moveDirection = transform.up * movementInput.x * moveSpeed;  // 위/아래 방향으로 이동
+
+            rb.velocity = new Vector3(0, moveDirection.y, 0);  // x, z축은 0으로 설정하여 흔들림 방지
+            Debug.Log(rb.velocity);
+        }
+        else rb.useGravity = true;
     }
 
     
     void FixedUpdate()
     {
-        Move();
+        if(!isOnLadder) Move();
         
 
         if (isJumping && IsGrounded() && GameManager.Instance.Player.condition.UseStamina(useStamina))
         {
-            rb.AddForce(Vector2.up * jumpForce, ForceMode.VelocityChange);
+            rb.AddForce(Vector2.up * jumpForce, ForceMode.Impulse);
             groundCheckNum++;
         }
     }
@@ -86,6 +101,13 @@ public class PlayerController : MonoBehaviour
     private void LateUpdate()
     {
         if (canLook) CameraLook();
+    }
+
+    public void SetLadder(bool state)
+    {
+        isOnLadder = state;
+        int disregardLayer = Mathf.RoundToInt(Mathf.Log(OnLadder.value, 2));
+        Physics.IgnoreLayerCollision(gameObject.layer, disregardLayer, isOnLadder);
     }
 
     public void CheckDropPlayer()
@@ -171,6 +193,12 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        if (isOnLadder)
+        {
+            groundy = transform.position.y;
+            return true;
+        }
+
         return false;
     }
 
@@ -203,5 +231,22 @@ public class PlayerController : MonoBehaviour
         }
 
         if (((1 << collision.gameObject.layer) & groundLayerMask) != 0) groundCheckNum = 0;
+
+        if (collision.collider.CompareTag("Ladder"))
+        {
+            if (transform.parent != null) transform.parent = null;
+
+            foreach (var platform in movePlatforms)
+            {
+                platform.movePlatformCollider.enabled = false;  // 각 MovePlatform의 콜라이더를 비활성화
+            }
+        }
+        else
+        {
+            foreach (var platform in movePlatforms)
+            {
+                platform.movePlatformCollider.enabled = true;
+            }
+        }
     }
 }
