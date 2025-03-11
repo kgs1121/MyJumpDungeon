@@ -69,24 +69,29 @@ public class PlayerController : MonoBehaviour
             isDrop = false;
             dropy = groundy;
         }
-
-        if (isOnLadder)
-        {
-            Vector3 moveDirection = new Vector3();
-            rb.useGravity = false;  // 중력 비활성화
-            moveDirection = transform.up * movementInput.x * moveSpeed;  // 위/아래 방향으로 이동
-
-            rb.velocity = new Vector3(0, moveDirection.y, 0);  // x, z축은 0으로 설정하여 흔들림 방지
-            Debug.Log(rb.velocity);
-        }
-        else rb.useGravity = true;
     }
 
     
     void FixedUpdate()
     {
-        if(!isOnLadder) Move();
-        
+        if (!isOnLadder)
+        {
+            Move();
+            rb.useGravity = true;
+        }
+        else
+        {
+            rb.useGravity = false;  // 중력 비활성화
+            Vector3 moveDirection;
+            float lookCheck = transform.forward.x < 0 ? 1 : -1;
+
+            if (!isJumping)
+            {
+                moveDirection = new Vector3(0, lookCheck * movementInput.y * moveSpeed, lookCheck * movementInput.x * moveSpeed); // y축 방향만 이동
+                Debug.Log(transform.forward.x);
+                rb.velocity = moveDirection;
+            }
+        }
 
         if (isJumping && IsGrounded() && GameManager.Instance.Player.condition.UseStamina(useStamina))
         {
@@ -94,8 +99,6 @@ public class PlayerController : MonoBehaviour
             groundCheckNum++;
         }
     }
-    
-
     
 
     private void LateUpdate()
@@ -106,8 +109,6 @@ public class PlayerController : MonoBehaviour
     public void SetLadder(bool state)
     {
         isOnLadder = state;
-        int disregardLayer = Mathf.RoundToInt(Mathf.Log(OnLadder.value, 2));
-        Physics.IgnoreLayerCollision(gameObject.layer, disregardLayer, isOnLadder);
     }
 
     public void CheckDropPlayer()
@@ -149,12 +150,29 @@ public class PlayerController : MonoBehaviour
         if (context.phase == InputActionPhase.Started)
         {
             isJumping = true;
+            isOnLadder = false;
         }
         else if (context.phase == InputActionPhase.Canceled)
         {
             isJumping = false;
         }
     }
+
+    
+    void LookDirection()
+    {
+        // 카메라의 forward 벡터를 저장 (상하좌우 방향만 저장)
+        Vector3 cameraForward = cameraContainer.forward;
+        // 카메라의 상/하, 좌/우 방향을 추출
+        float directionX = cameraForward.x; // 좌우 방향 (플러스면 오른쪽, 마이너스면 왼쪽)
+        float directionZ = cameraForward.z; // 상하 방향 (플러스면 앞쪽, 마이너스면 뒤쪽)
+        // 상하좌우만 저장
+        float savedXRotation = cameraContainer.eulerAngles.x; // 상하 (pitch)
+        float savedYRotation = cameraContainer.eulerAngles.y; // 좌우 (yaw)
+        // 저장된 상하좌우 회전 값으로 회전 복원
+        cameraContainer.eulerAngles = new Vector3(savedXRotation, savedYRotation, 0);
+    }
+
 
     void Move()
     {
@@ -163,6 +181,7 @@ public class PlayerController : MonoBehaviour
         dir.y = rb.velocity.y;
         rb.velocity = dir;
     }
+    
 
     void CameraLook()
     {
